@@ -1,4 +1,0 @@
-ToolSet: 11.0 w64 (local)@C:\Users\tal44\Downloads\winlibs-i686-posix-dwarf-gcc-13.2.0-llvm-17.0.6-mingw-w64ucrt-11.0.1-r5\mingw32
-Options: 
-
-Options:-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2023.3.4/bin/ninja/win/x64/ninja.exe
