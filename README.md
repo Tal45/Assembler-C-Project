@@ -1,81 +1,102 @@
-Two-Pass Assembler
-Table of Contents
-Project Overview
-Features
-Getting Started
-Prerequisites
-Installation
-Usage
-Running the Assembler
-Input File Format
-Output Files
-Code Structure
-Contributing
-License
-Acknowledgements
-Contact
-Project Overview
+# Two-Pass Assembler
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Features](#features)
+3. [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+4. [Usage](#usage)
+    - [Running the Assembler](#running-the-assembler)
+    - [Input File Format](#input-file-format)
+    - [Output Files](#output-files)
+5. [Code Structure](#code-structure)
+6. [Contributing](#contributing)
+7. [License](#license)
+8. [Acknowledgements](#acknowledgements)
+9. [Contact](#contact)
+
+## Project Overview
+
 This project implements a two-pass assembler for a hypothetical assembly language. The assembler translates assembly language source code into machine code, performing lexical analysis, syntax analysis, and code generation in two passes.
 
-Features
-Two-Pass Processing: Ensures accurate resolution of symbols and addresses.
-Error Handling: Detects and reports syntax and semantic errors.
-Symbol Table Management: Efficient handling of labels and variables.
-Output Files: Generates machine code, symbol table, and listing files.
-Getting Started
-Prerequisites
-GCC (GNU Compiler Collection)
-Make (optional, for build automation)
-Installation
-Clone the repository:
+## Features
 
-sh
-Copy code
-git clone https://github.com/yourusername/two-pass-assembler.git
-cd two-pass-assembler
-Compile the assembler:
+- **Two-Pass Processing**: Ensures accurate resolution of symbols and addresses.
+- **Error Handling**: Detects and reports syntax and semantic errors.
+- **Memory and Symbol Management**: Efficient handling of labels and memory.
+- **Output Files**: Generates machine code, extern labels usage, entry labels definitions, macro-extended file
 
-sh
-Copy code
-gcc -o assembler assembler.c
-Or, if using Make:
+## Getting Started
 
-sh
-Copy code
-make
-Usage
-Running the Assembler
-To assemble a source file, run the following command:
+### Prerequisites
 
-sh
-Copy code
-./assembler source.asm
-Input File Format
-The assembler expects the source file to be in a specific format. [Provide details on the expected assembly language syntax, instructions, directives, etc.]
+- GCC (GNU Compiler Collection)
+- Make (build automation)
 
-Output Files
-Machine Code File: output.o
-Symbol Table File: symbol_table.txt
-Listing File: listing.lst
-Code Structure
-assembler.c: Main source file containing the implementation of the assembler.
-lexer.c and lexer.h: Lexical analysis module.
-parser.c and parser.h: Syntax analysis and parsing module.
-codegen.c and codegen.h: Code generation module.
-Makefile: Build automation script.
-Contributing
+### Installation
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/Tal45/Assembler-C-Project.git
+    cd Assembler-C-Project
+    ```
+
+2. Compile the assembler:
+    ```sh
+    make
+    ```
+
+## Usage
+
+### Running the Assembler
+
+To assemble a source file, run the following command for source.as file:
+```sh
+./assembler source
+```
+
+### Input File Format
+
+The assembler expects the source file to be in a specific format. Provide details on the expected assembly language syntax, instructions, directives, etc.
+
+### Output Files
+
+- **Macro-Extended File**: `source.am`
+- **Machine Code File**: `source.ob`
+- **Extern Labels**: `source.ext`
+- **Entry Labels**: `source.ent`
+
+## Code Structure
+
+- `main.c`: Main source file containing the main function
+- `preprocess.c`:
+- `firstpass.c`:
+- `secondpass.c`
+- 
+- `makefile`: Build automation script.
+
+## Contributing
+
 Contributions are welcome! Please follow these steps:
 
-Fork the repository.
-Create a new branch: git checkout -b feature-branch
-Make your changes and commit them: git commit -m 'Add new feature'
-Push to the branch: git push origin feature-branch
-Open a pull request.
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature-branch`
+3. Make your changes and commit them: `git commit -m 'Add new feature'`
+4. Push to the branch: `git push origin feature-branch`
+5. Open a pull request.
 
-Acknowledgements
-[Acknowledgement 1]
-[Acknowledgement 2]
-Contact
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- Acknowledge any individuals, resources, or inspirations here.
+
+## Contact
+
+Made by Vadim Volkov and Tal Levi
 For any questions or feedback, please reach out to [your email@example.com].
+
