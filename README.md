@@ -93,10 +93,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-- Acknowledge any individuals, resources, or inspirations here.
+- Made by **Vadim Volkov** and **Tal Levi** @ Open University as final project for C-Programming Labratory Course semester 2024a.
+- Studies based on the book The C Programming Language (ANSI-C) 2nd Edition by Brian W.Kernighan and Dennis M. Ritchie.
 
 ## Contact
 
-Made by Vadim Volkov and Tal Levi
-For any questions or feedback, please reach out to [your email@example.com].
+For any questions or feedback, please reach out to [tal4456@gmail.com] or [vadim@gmail.com].
 
