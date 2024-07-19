@@ -168,9 +168,15 @@ int validateData(char *line) {
     return 1;
 }
 
+void trimCntrls(char *line) {
+    while (iscntrl(line[strlen(line)-1])) { /* trim control characters from end like \r\n */
+        line[strlen(line)-1] = '\0';
+    }
+}
 
 void handleError(int linenum, char *line, int *err) {
     *err = 1;
+    trimCntrls(line);
     printf("Error: occurred in line %d: %s\n", linenum, line);
 }
 

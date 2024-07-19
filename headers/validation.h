@@ -24,5 +24,6 @@ int checkOperandTypes(char *operand);
 int returnRegisterNumber(char *operand);
 Command *findCommand(char *name, Command *commands);
 char *getCmdName(char *line, char *word);
+void trimCntrls(char *line);
 
 #endif

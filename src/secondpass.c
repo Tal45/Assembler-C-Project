@@ -10,7 +10,7 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
     int addr;
     int extUseFlag = 0;
     int tmpIC;
-    int err = 0;
+    int err = 0, endCode = 0;
     int lineNum = 0;
     int IC = 0;
 
@@ -21,6 +21,7 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
     }
 
     while (fgets(nextLine, MAX_INPUT_LINE, source) != NULL) {
+        trimCntrls(nextLine);
         lineNum++;
         strcpy(copyLine, nextLine);
         token = strtok(copyLine, " \t\r\n");
@@ -34,7 +35,7 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
         else if ((strcmp(token, ".entry") == 0)){
             token = strtok(NULL, " \t\r\n");
             if ((labelIndex = findLabelIndex(labelTable, *labelCount, token)) < 0) { /* label not defined in first pass */
-                handleError(lineNum, nextLine, &err);
+                handleError(lineNum, nextLine, &endCode);
             } else {
                 labelTable[labelIndex].isEntry = 1;
                 continue;
@@ -43,7 +44,7 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
             while ( (token = strtok(NULL, " ,\t\r\n")) != NULL) {
                 if (checkOperandTypes(token) == IS_LABEL) { /* function to check if the current operand is a label use */
                     if ((labelIndex = findLabelIndex(labelTable, *labelCount,token)) < 0) {
-                        handleError(lineNum, nextLine, &err);
+                        handleError(lineNum, nextLine, &endCode);
                     } else { /* complete the address of the label in the virutal memory */
                         addr = labelTable[labelIndex].address;
                         extUseFlag = labelTable[labelIndex].isExtern;
@@ -63,5 +64,5 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
     }
     fclose(source);
 
-    return err; /* end */
+    return err || endCode; /* end */
 }

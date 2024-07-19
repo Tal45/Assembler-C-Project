@@ -44,7 +44,7 @@ int findLabelIndex(Label *labelTable, int tableSize, char *labelName) {
             return i;
         }
     }
-    printf("Error: Label %s not found in the label table\n", labelName);
+    printf("Error: label %s not found in the label table!\n", labelName);
     return -1;
 }
 

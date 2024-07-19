@@ -11,7 +11,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
     char copyLine[MAX_INPUT_LINE];
     char *token;
     int tmpNum;
-
+    int endCode = 0;
     int err = 0;
 
     FILE *source = fopen(amfile, "r");
@@ -21,6 +21,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
     }
 
     while (fgets(line, MAX_INPUT_LINE, source) != NULL) {
+        trimCntrls(line);
         lineNum++;
         strcpy(copyLine, line);
         token = strtok(line, " \t\r\n");
@@ -30,7 +31,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
 
             strcpy(label, token);
             if (isLabelDefined(label, labelTable, *labelCount)) {
-                err = 1;
+                endCode = 1;
             }
             token = strtok(NULL, " \t\r\n");
         }
@@ -50,7 +51,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
                         addEntry(*TableDC, (*sizeDC), (*sizeDC) - 1, tmpNum & ZERO_UPPER_BITS);
                     }
                 } else {
-                    handleError(lineNum, copyLine, &err);
+                    handleError(lineNum, copyLine, &endCode);
                 }
             } else { /* data type is string */
                 if (validateString(copyLine)) { /* returns 1 if valid, 0 if invalid */
@@ -71,7 +72,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
                     addEntry(*TableDC, (*sizeDC), (*sizeDC) - 1, 0);
 
                 } else {
-                    handleError(lineNum, copyLine, &err);
+                    handleError(lineNum, copyLine, &endCode);
                 }
             }
         } else if (strcmp(token, ".extern") == 0 || strcmp(token, ".entry") == 0) {
@@ -84,12 +85,12 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
                     token = strtok(NULL, " \t\r\n");
                     addLabel(labelTable, labelCount, token, 1, 0, 1, 0);
                 } else {
-                    handleError(lineNum, copyLine, &err);
+                    handleError(lineNum, copyLine, &endCode);
                 }
             } else { /* entry type label */
                 *entFlag = 1;
                 if (!validateSingleLabel(copyLine)) { /* check if only one label in declaration */
-                    handleError(lineNum, copyLine, &err);
+                    handleError(lineNum, copyLine, &endCode);
                 }
             }
         } else if (isCommand(token)) {
@@ -97,24 +98,25 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
                 addLabel(labelTable, labelCount, label, *IC, 0, 0 ,0);
             }
             if (!processInstruction(copyLine, IC, TableIC, sizeIC)) { /* process instruction to allocate memory */
-                handleError(lineNum, copyLine, &err);
+                handleError(lineNum, copyLine, &endCode);
             }
 
         } else { /* unknown syntax or undefined command / instruction */
             printf("Error: unknown syntax (line %d): %s", lineNum, copyLine);
-            err = 1;
+            endCode = 1;
         }
     }
 
     fclose(source);
-    if (err) { /* if error stop here */
+    if (endCode) { /* if error stop here */
         return -1;
     }
 
+    /* update offset for data counter*/
     updateDCOffset(labelTable, *labelCount, *IC);
-    if (*sizeDC) {
+    if (*sizeDC) { /* if any data presents, merge it into one virtual memory table */
         mergeMemoryTables(TableIC, *TableDC, sizeIC, *sizeDC, *IC);
     }
 
-    return 0;
+    return 0; /* success */
 }

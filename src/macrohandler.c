@@ -69,14 +69,13 @@ int findMacroIndex(char *name, Macro *macrotable, unsigned int size) {
         if (strcmp(macrotable[i].name, name) == 0)
             return i;
     }
-    return 0; /* dummy return */
+    return 0; /* dummy return assuming no issues in macro-stage as mentioned */
 }
 
 int isMacroName(char *name, Macro *macrotable, unsigned int size) {
     char tmp[MAX_MACRO_NAME];
     int i;
     sscanf(name, "%s", tmp);
-
 
     for (i = 0; i < size; i++) {
         if (strcmp(macrotable[i].name, tmp) == 0) {

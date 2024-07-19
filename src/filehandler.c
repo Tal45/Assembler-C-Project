@@ -7,7 +7,7 @@ char *createFile(char *name, char *format) {
     tmp = (char *) malloc((name_size + 1) * sizeof(char));
     if (tmp == NULL) {
         printf("malloc: Memory allocation failed!\n");
-        printf("Error: unable to create file %s\n", strcat(name, format));
+        printf("Error: unable to create file: %s\n", strcat(name, format));
         return NULL;
     }
     strcpy(tmp, name);
@@ -22,6 +22,7 @@ int dumpEntriesToFile(const char *filename, Label labelTable[], int labelCount) 
 
     file = fopen(filename, "a");
     if (file == NULL) {
+        printf("Error: unable to create file: %s\n", filename);
         return 1;
     }
 
@@ -41,6 +42,7 @@ int dumpExternsToFile(char *filename, extList *head) {
 
     file = fopen(filename, "a");
     if (file == NULL) {
+        printf("Error: unable to create file: %s\n", filename);
         return 1;
     }
 
@@ -59,7 +61,8 @@ int dumpMemoryToFile(char *filename, virtualMem *array, int sizeIC, int IC, int 
     int i;
     FILE *fp = fopen(filename, "a");
     if (fp == NULL) {
-        /* file open error */
+        printf("Error: unable to create file: %s\n", filename);
+        return 1;
     }
     fprintf(fp,"  %d %d\n", IC-IC_START_ADDRESS, sizeDC);
 
@@ -77,4 +80,23 @@ int dumpMemoryToFile(char *filename, virtualMem *array, int sizeIC, int IC, int 
     }
     fclose(fp);
     return 0; /* success */
+}
+
+void removeFiles(char *filename) {
+    char path[MAX_BUFFER];
+    int size;
+    const char *formats[] = {
+            ".am",
+            ".ext",
+            ".ent",
+            ".ob"
+    };
+    size = sizeof(formats) / sizeof(formats[0]);
+    strcpy(path, filename);
+
+    while (--size >= 0) {
+        remove(strcat(path, formats[size]));
+        strcpy(path, filename);
+    }
+
 }
