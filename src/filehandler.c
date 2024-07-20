@@ -5,7 +5,7 @@ char *createFile(char *name, char *format, int isOutput) {
     char *filepath = NULL;
     unsigned int name_size = 0;
 
-    filepath = strchr(name, '/'); /* find if directory included in filename */
+    filepath = strrchr(name, '/'); /* find if directory included in filename */
     if (filepath && isOutput) { /* if output directory, cut the input directory */
         filepath++;
     } else {

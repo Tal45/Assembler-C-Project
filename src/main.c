@@ -3,6 +3,7 @@
 int main (int argc, char *argv[]) {
     char *amfile = NULL, *asfile = NULL, *obfile = NULL, *extfile = NULL, *entfile = NULL;
     int errCode = 0;
+    char *filename;
 
     Label labelTable[MAX_LABELS];
     int labelCount = 0;
@@ -17,6 +18,16 @@ int main (int argc, char *argv[]) {
     extList *extApperance = NULL;
 
     while (--argc > 0) { /* iterate while there are more files to process */
+	    if (strrchr(argv[argc], '/') == NULL) {
+            filename = argv[argc];
+        }
+        else{
+            filename = strrchr(argv[argc],'/');
+            filename++; 
+        }
+
+        printf("\n------------------ Assembling %s file... ------------------\n", filename);
+
         asfile = createFile(argv[argc], ".as", 0);
         if (asfile == NULL) {
             break;
@@ -106,6 +117,10 @@ int main (int argc, char *argv[]) {
         /* set dynamic structs to NULL */
         TableIC = TableDC = NULL;
         extApperance = NULL;
+	    if(!errCode){
+            printf("\n- Files assembled successfully!\n");
+        }
+        printf("\n----------------- End of assembly (%s.as) -----------------\n", filename);
 
     } /* end of while loop */
 
