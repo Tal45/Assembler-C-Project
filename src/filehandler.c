@@ -1,34 +1,47 @@
+
 #include "../headers/filehandler.h"
 
-char *createFile(char *name, char *format, int isOutput) {
-    char *tmp;
-    char *filepath = NULL;
+
+int createDirectory(char *path) {
+    char command[256];
+    snprintf(command, sizeof(command), "mkdir -p %s", path);
+    return system(command);
+}
+
+char *createFile(char *name, char *format) {
+    char *tmp = NULL;
+    char *fullpath = NULL;
     unsigned int name_size = 0;
 
-    filepath = strchr(name, '/'); /* find if directory included in filename */
-    if (filepath && isOutput) { /* if output directory, cut the input directory */
-        filepath++;
-    } else {
-        filepath = name; /* otherwise take the filename and directory */
+    name_size += strlen(name) + strlen(format) + strlen(OUTPUT_DIR);
+
+    fullpath = concatenateDir(OUTPUT_DIR,name);
+    if (fullpath == NULL) {
+        printf("Error: unable to allocate memory for string concatenation %s\n", OUTPUT_DIR);
+        return NULL;
     }
-    name_size += strlen(filepath) + strlen(format);
-    if (isOutput) {
-        name_size += strlen(OUTPUT_DIR);
-    }
+    strcat(fullpath,"/"); /*creates the path ' OUTPUT_DIR/filename/ ' */
 
     tmp = (char *) malloc((name_size + 1) * sizeof(char));
     if (tmp == NULL) {
         printf("malloc: Memory allocation failed!\n");
-        printf("Error: unable to create file: %s\n", strcat(filepath, format));
+        printf("Error: unable to create file: %s\n", strcat(name, format));
+        free(fullpath);
         return NULL;
     }
-    *tmp = '\0';
-    if (isOutput) {
-        strcpy(tmp, OUTPUT_DIR); /* add output directory */
-    }
-    strcat(tmp, filepath);
-    strcat(tmp, format);
 
+    if (createDirectory(fullpath) != 0) {
+        printf("Error: unable to create output directory %s\n", OUTPUT_DIR);
+        free(tmp);
+        free(fullpath);
+        return NULL;
+    }
+
+    strcpy(tmp, fullpath); /* add output directory */
+    strcat(tmp, name); /* add file name */
+    strcat(tmp, format); /* add format name */
+    free(fullpath);
+    /*return full path to file 'OUTPUT_DIR/filename/filename.format' */
     return tmp;
 }
 
@@ -115,4 +128,26 @@ void removeFiles(char *filename) {
         strcpy(path, filename);
     }
 
+}
+
+char* concatenateDir(char* str1, char* str2) {
+    /* Calculate the total length of the concatenated string */
+    size_t length1 = strlen(str1);
+    size_t length2 = strlen(str2);
+    size_t totalLength = length1 + length2 + 1; /* +1 for the null terminator */
+
+    /* Allocate memory for the concatenated string */
+    char* result = (char*)malloc(totalLength * sizeof(char));
+    if (result == NULL) {
+        printf("Memory allocation failed!\n");
+        return NULL;
+    }
+
+    /* Copy the first string into the result */
+    strcpy(result, str1);
+
+    /* Concatenate the second string to the result */
+    strcat(result, str2);
+
+    return result;
 }

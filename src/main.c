@@ -2,6 +2,7 @@
 
 int main (int argc, char *argv[]) {
     char *amfile = NULL, *asfile = NULL, *obfile = NULL, *extfile = NULL, *entfile = NULL;
+    char *filename = NULL;
     int errCode = 0;
 
     Label labelTable[MAX_LABELS];
@@ -17,11 +18,22 @@ int main (int argc, char *argv[]) {
     extList *extApperance = NULL;
 
     while (--argc > 0) { /* iterate while there are more files to process */
-        asfile = createFile(argv[argc], ".as", 0);
+        if (strrchr(argv[argc],'/') == NULL){
+            filename = concatenateDir(argv[argc],"");
+        }
+        else{
+            filename = strrchr(argv[argc],'/');
+            filename++; 
+        }
+ 
+        printf("-----assembling %s file---------------\n\n", filename);
+        
+        asfile = concatenateDir(argv[argc], ".as");
         if (asfile == NULL) {
             break;
         }
-        amfile = createFile(argv[argc], ".am",1);
+        printf("here");
+        amfile = createFile(filename, ".am");
         if (amfile == NULL) {
             break;
         }
@@ -41,7 +53,6 @@ int main (int argc, char *argv[]) {
             }
         }
 
-
         if (!errCode) {
             errCode = secondPass(amfile, labelTable, &labelCount, &TableIC, &extApperance);
             if (errCode) {
@@ -52,7 +63,7 @@ int main (int argc, char *argv[]) {
         free(amfile); /* am file no longer needed, deallocate memory */
 
         if (!errCode) { /* dump data into files */
-            obfile = createFile(argv[argc], ".ob", 1);
+            obfile = createFile(filename, ".ob");
             if (obfile == NULL) {
                 break;
             }
@@ -61,7 +72,7 @@ int main (int argc, char *argv[]) {
             free(obfile); /* de-allocate memory */
 
             if (extApperance) {
-                extfile = createFile(argv[argc], ".ext", 1);
+                extfile = createFile(filename, ".ext");
                 if (extfile == NULL) {
                     errCode = 1;
                     break;
@@ -72,7 +83,7 @@ int main (int argc, char *argv[]) {
             }
 
             if (entFlag) {
-                entfile = createFile(argv[argc], ".ent", 1);
+                entfile = createFile(filename, ".ent");
                 if (entfile == NULL) {
                     errCode = 1;
                     break;
@@ -87,7 +98,7 @@ int main (int argc, char *argv[]) {
         if (errCode) {
             removeFiles(argv[argc]);
         }
-
+        
 
         /* free up memory and zero flags for next iteration */
 
@@ -106,8 +117,13 @@ int main (int argc, char *argv[]) {
         /* set dynamic structs to NULL */
         TableIC = TableDC = NULL;
         extApperance = NULL;
+        if(!errCode){
+            printf("Operation completed successfully\n\n");
+        }
+        printf("-----end of assembling %s file---------------\n\n", filename);
 
     } /* end of while loop */
 
+    printf("Created output files are in the 'outputfiles' folder\n");
     return 0; /* main executed successfully */
 } /* end of main */

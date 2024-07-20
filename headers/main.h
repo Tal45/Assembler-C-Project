@@ -13,5 +13,6 @@ int preProcess(char *file, char *destfile);
 int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **TableIC,
               int *sizeIC, virtualMem **TableDC, int *sizeDC, int *IC, int *entFlag);
 int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **TableIC, extList **extApp);
+char* concatenate(char* str1, char* str2);
 
 #endif
