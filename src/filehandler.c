@@ -1,16 +1,32 @@
 #include "../headers/filehandler.h"
 
-char *createFile(char *name, char *format) {
+char *createFile(char *name, char *format, int isOutput) {
     char *tmp;
-    unsigned int name_size = strlen(name) + strlen(format);
+    char *filepath = NULL;
+    unsigned int name_size = 0;
+
+    filepath = strchr(name, '/'); /* find if directory included in filename */
+    if (filepath && isOutput) { /* if output directory, cut the input directory */
+        filepath++;
+    } else {
+        filepath = name; /* otherwise take the filename and directory */
+    }
+    name_size += strlen(filepath) + strlen(format);
+    if (isOutput) {
+        name_size += strlen(OUTPUT_DIR);
+    }
 
     tmp = (char *) malloc((name_size + 1) * sizeof(char));
     if (tmp == NULL) {
         printf("malloc: Memory allocation failed!\n");
-        printf("Error: unable to create file: %s\n", strcat(name, format));
+        printf("Error: unable to create file: %s\n", strcat(filepath, format));
         return NULL;
     }
-    strcpy(tmp, name);
+    *tmp = '\0';
+    if (isOutput) {
+        strcpy(tmp, OUTPUT_DIR); /* add output directory */
+    }
+    strcat(tmp, filepath);
     strcat(tmp, format);
 
     return tmp;

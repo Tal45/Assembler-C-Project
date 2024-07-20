@@ -7,7 +7,7 @@
 #include "structs.h"
 
 
-char *createFile(char *name, char *format);
+char *createFile(char *name, char *format, int isOutput);
 int dumpMemoryToFile(char *filename, virtualMem *array, int sizeIC, int IC, int sizeDC);
 int dumpExternsToFile(char *filename, extList *head);
 int dumpEntriesToFile(const char *filename, Label labelTable[], int labelCount);

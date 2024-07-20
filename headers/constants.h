@@ -9,6 +9,7 @@
 #define MAX_CMD_NAME 5 /* length of max cmd name */
 #define BASE_DECIMAL 10
 #define MAX_OPERANDS 2
+#define OUTPUT_DIR "outputfiles/"
 
 /* macro related */
 #define MAX_MACRO_NAME 31 /* in forum discussion it was said macros name will be 31 chars at max */

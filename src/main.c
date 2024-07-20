@@ -17,11 +17,11 @@ int main (int argc, char *argv[]) {
     extList *extApperance = NULL;
 
     while (--argc > 0) { /* iterate while there are more files to process */
-        asfile = createFile(argv[argc], ".as");
+        asfile = createFile(argv[argc], ".as", 0);
         if (asfile == NULL) {
             break;
         }
-        amfile = createFile(argv[argc], ".am");
+        amfile = createFile(argv[argc], ".am",1);
         if (amfile == NULL) {
             break;
         }
@@ -52,7 +52,7 @@ int main (int argc, char *argv[]) {
         free(amfile); /* am file no longer needed, deallocate memory */
 
         if (!errCode) { /* dump data into files */
-            obfile = createFile(argv[argc], ".ob");
+            obfile = createFile(argv[argc], ".ob", 1);
             if (obfile == NULL) {
                 break;
             }
@@ -61,7 +61,7 @@ int main (int argc, char *argv[]) {
             free(obfile); /* de-allocate memory */
 
             if (extApperance) {
-                extfile = createFile(argv[argc], ".ext");
+                extfile = createFile(argv[argc], ".ext", 1);
                 if (extfile == NULL) {
                     errCode = 1;
                     break;
@@ -72,7 +72,7 @@ int main (int argc, char *argv[]) {
             }
 
             if (entFlag) {
-                entfile = createFile(argv[argc], ".ent");
+                entfile = createFile(argv[argc], ".ent", 1);
                 if (entfile == NULL) {
                     errCode = 1;
                     break;
