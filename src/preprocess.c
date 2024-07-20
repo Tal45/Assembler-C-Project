@@ -49,7 +49,7 @@ int preProcess(char *file, char *destfile) {
                 }
                 endCode = resizeMacroTable(&macrotable, ++macrotable_size);
                 if (endCode < 0) {
-                    /* if re-alloc failed macrotable still holds the original pointer so it can be freed */
+                    /* if re-alloc failed macrotable still holds the original pointer, so it can be freed */
                     continue;
                 }
                 /* function gets macro name, src file and macrotable and initializes the macro actions into struct */
