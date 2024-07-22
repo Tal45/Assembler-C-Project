@@ -68,14 +68,44 @@ The assembler expects the source file to be in a specific format. Provide detail
 - **Extern Labels**: `source.ext`
 - **Entry Labels**: `source.ent`
 
-## Code Structure
+## Project Structure
 
-- `main.c`: Main source file containing the main function
-- `preprocess.c`:
-- `firstpass.c`:
-- `secondpass.c`
-- 
-- `makefile`: Build automation script.
+The project directory structure is as follows:
+
+Assembler-C-Project/
+│
+├── src/                     
+│   ├── main.c                 
+│   ├── preprocess.c           
+│   ├── firstpass.c         
+│   ├── secondpass.c        
+│   ├── filehandler.c                 
+│   ├── valdation.c   
+│   ├── marcohandler.c
+│    ├── labelhandler.c
+│    └── virtualmemory.c
+│
+├── headers/                    
+│   ├── main.h
+│    ├── virtualmemory.h          
+│    ├── validation.h
+│    ├── structs.h
+│    ├── labelhandler.h
+│    ├── macrohandler.h
+│    ├── constants.h
+│    └── filehandler.h                  
+│
+├── inputfiles/                  
+│   ├──        
+│   └── ...                   
+│
+├── outputfiles/                  
+│   ├──             
+│   └── ...                  
+│         
+├── README.md               
+├── makefile        
+└── LICENSE                  
 
 ## Contributing
 
