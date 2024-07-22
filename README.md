@@ -52,9 +52,9 @@ This project implements a two-pass assembler for a hypothetical assembly languag
 
 ### Running the Assembler
 
-To assemble a source file, run the following command for source.as file:
+To assemble a source file, run the following command for '.as' source files:
 ```sh
-./assembler source source2 source3 ...
+./assembler source1 source2 source3 ...
 ```
 
 ### Input File Format
