@@ -38,7 +38,6 @@ int main (int argc, char *argv[]) {
 
         errCode = preProcess(asfile, amfile);
         if (errCode) {
-            remove(amfile);
             printf("Error: pre-assembly failed for file: %s\n", asfile);
         }
         free(asfile);
@@ -47,7 +46,6 @@ int main (int argc, char *argv[]) {
             errCode = firstPass(amfile, labelTable, &labelCount, &TableIC, &sizeIC, &TableDC, &sizeDC, &IC, &entFlag);
             if (errCode) {
                 printf("Error: first pass failed for file: %s\n", amfile);
-                remove(amfile);
             }
         }
 
@@ -56,7 +54,6 @@ int main (int argc, char *argv[]) {
             errCode = secondPass(amfile, labelTable, &labelCount, &TableIC, &extApperance);
             if (errCode) {
                 printf("Error: second pass failed for file: %s\n", amfile);
-                remove(amfile);
             }
         }
         free(amfile); /* am file no longer needed, deallocate memory */
@@ -95,7 +92,7 @@ int main (int argc, char *argv[]) {
 
         /* if error occured somewhere along the way, remove all files associated if any were created */
         if (errCode) {
-            removeFiles(argv[argc]);
+            removeFiles(filename);
         }
 
 

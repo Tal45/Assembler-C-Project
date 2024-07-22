@@ -99,20 +99,23 @@ int dumpMemoryToFile(char *filename, virtualMem *array, int sizeIC, int IC, int 
 }
 
 void removeFiles(char *filename) {
-    char path[MAX_BUFFER];
     int size;
+    char *pt;
+    char path[MAX_BUFFER] = OUTPUT_DIR;
     const char *formats[] = {
             ".am",
             ".ext",
             ".ent",
             ".ob"
     };
+    pt = strchr(path, '/'); /* pointer to end of directory name */
+    pt++;
     size = sizeof(formats) / sizeof(formats[0]);
-    strcpy(path, filename);
+    strcat(path, filename); /* copy file name */
 
     while (--size >= 0) {
-        remove(strcat(path, formats[size]));
-        strcpy(path, filename);
+        remove(strcat(path, formats[size])); /* concat format and remove file */
+        strcpy(pt, filename); /* reset file name to remove formatting */
     }
 
 }
