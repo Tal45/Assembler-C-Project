@@ -54,7 +54,7 @@ This project implements a two-pass assembler for a hypothetical assembly languag
 
 To assemble a source file, run the following command for source.as file:
 ```sh
-./assembler source
+./assembler source source2 source3 ...
 ```
 
 ### Input File Format
