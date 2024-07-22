@@ -11,7 +11,7 @@
     - [Running the Assembler](#running-the-assembler)
     - [Input File Format](#input-file-format)
     - [Output Files](#output-files)
-5. [Code Structure](#code-structure)
+5. [Project Structure](#project-structure)
 6. [Contributing](#contributing)
 7. [License](#license)
 8. [Acknowledgements](#acknowledgements)
