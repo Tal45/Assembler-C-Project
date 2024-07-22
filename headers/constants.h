@@ -9,6 +9,8 @@
 #define MAX_CMD_NAME 5 /* length of max cmd name */
 #define BASE_DECIMAL 10
 #define MAX_OPERANDS 2
+#define TWO_WORDS 2
+#define THREE_WORDS 3
 #define OUTPUT_DIR "outputfiles/"
 
 /* macro related */
@@ -39,5 +41,28 @@
 #define R_BIT 2
 #define E_BIT 1
 #define ZERO_UPPER_BITS 0x00007FFF
+#define ADDRESSING_MODE_1_2_3_4 0xF
+#define ADDRESSING_MODE_1_2_3 0xE
+#define ADDRESSING_MODE_1_2 0x6
+#define ADDRESSING_MODE_1 0x2
+#define MOV_OPCODE 0
+#define CMP_OPCODE 1
+#define ADD_OPCODE 2
+#define SUB_OPCODE 3
+#define LEA_OPCODE 4
+#define CLR_OPCODE 5
+#define NOT_OPCODE 6
+#define INC_OPCODE 7
+#define DEC_OPCODE 8
+#define JMP_OPCODE 9
+#define BNE_OPCODE 10
+#define RED_OPCODE 11
+#define PRN_OPCODE 12
+#define JSR_OPCODE 13
+#define RTS_OPCODE 14
+#define STOP_OPCODE 15
+#define TWO_OPERANDS 2
+#define ONE_OPERAND 1
+#define ZERO_OPERANDS 0
 
 #endif

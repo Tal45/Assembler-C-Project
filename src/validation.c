@@ -263,38 +263,45 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
     char *operands[MAX_OPERANDS]; /* holder for operands */
     int operandCount = 0;
     Command *cmd;
-    char *tmpLine;
+    char *tmpLine, *copyLine;
     char cmdName[MAX_CMD_NAME];
     char *comma;
     int i;
-    int operandTypes[2]; /* holder for operand types */
+    int operandTypes[TWO_OPERANDS]; /* holder for operand types */
 
     Command commands[] = {
-            {"mov", 0, 2},
-            {"cmp", 1, 2},
-            {"add", 2, 2},
-            {"sub", 3, 2},
-            {"lea", 4, 2},
-            {"clr", 5, 1},
-            {"not", 6, 1},
-            {"inc", 7, 1},
-            {"dec", 8, 1},
-            {"jmp", 9, 1},
-            {"bne", 10, 1},
-            {"red", 11, 1},
-            {"prn", 12, 1},
-            {"jsr", 13, 1},
-            {"rts", 14, 0},
-            {"stop", 15, 0},
+            {"mov", MOV_OPCODE, TWO_OPERANDS, ADDRESSING_MODE_1_2_3_4, ADDRESSING_MODE_1_2_3},
+            {"cmp", CMP_OPCODE, TWO_OPERANDS, ADDRESSING_MODE_1_2_3_4, ADDRESSING_MODE_1_2_3_4},
+            {"add", ADD_OPCODE, TWO_OPERANDS, ADDRESSING_MODE_1_2_3_4, ADDRESSING_MODE_1_2_3},
+            {"sub", SUB_OPCODE, TWO_OPERANDS, ADDRESSING_MODE_1_2_3_4, ADDRESSING_MODE_1_2_3},
+            {"lea", LEA_OPCODE, TWO_OPERANDS, ADDRESSING_MODE_1, ADDRESSING_MODE_1_2_3},
+            {"clr", CLR_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2_3},
+            {"not", NOT_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2_3},
+            {"inc", INC_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2_3},
+            {"dec", DEC_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2_3},
+            {"jmp", JMP_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2},
+            {"bne", BNE_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2},
+            {"red", RED_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2_3},
+            {"prn", PRN_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2_3_4},
+            {"jsr", JSR_OPCODE, ONE_OPERAND, 0, ADDRESSING_MODE_1_2},
+            {"rts", RTS_OPCODE, ZERO_OPERANDS, 0, 0},
+            {"stop", STOP_OPCODE, ZERO_OPERANDS, 0, 0},
     };
 
+    copyLine = (char *)malloc(strlen(line) * sizeof(char));
+    if (copyLine == NULL) {
+        printf("Error: memory allocation failed!\n");
+        return 0;
+    }
+    strcpy(copyLine, line); /* create a copy of input line */
 
-    removeLabel(line);
-    tmpLine = getCmdName(line, cmdName);
+    removeLabel(copyLine);
+    tmpLine = getCmdName(copyLine, cmdName);
     cmd = findCommand(cmdName, commands);
 
     if (!cmd) {
         printf("Error: unknown command: %s\n", cmdName);
+        free(copyLine);
         return 0; /* err return */
     }
 
@@ -310,6 +317,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
             operands[operandCount++] = tmpLine;
         } else {
             printf("Error: invalid number of operands for command: %s\n", cmd->name);
+            free(copyLine);
             return 0; /* err return */
         }
 
@@ -322,6 +330,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
 
     if (operandCount < cmd->num_operands) {
         printf("Error: insufficient amount of operands, (expected: %d found: %d)\n", cmd->num_operands, operandCount);
+        free(copyLine);
         return 0;
     }
 
@@ -329,30 +338,52 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
         operandTypes[i] = checkOperandTypes(operands[i]);
         if (operandTypes[i] == 0) {
             printf( "Error: invalid operand type: %s\n", operands[i]);
+            free(copyLine);
             return 0; /* err return  */
+        }
+    }
+
+    /* check legality of addressing mode */
+    if (operandCount == TWO_OPERANDS) {
+        if (!(encodeAddressingMode(operandTypes[0]) & cmd->legalAddrSrc)) {
+            printf("Error: illegal operand addressing mode for source operand: %s\n", operands[0]);
+            free(copyLine);
+            return 0;
+        }
+        if (!(encodeAddressingMode(operandTypes[1]) & cmd->legalAddrTarget)) {
+            printf("Error: illegal operand addressing mode for target operand: %s\n", operands[1]);
+            free(copyLine);
+            return 0;
+        }
+    } else if (operandCount == ONE_OPERAND) {
+        if (!(encodeAddressingMode(operandTypes[0]) & cmd->legalAddrTarget)) {
+            printf("Error: illegal operand addressing mode for target operand: %s\n", operands[0]);
+            free(copyLine);
+            return 0;
         }
     }
 
     /* encode instruction */
     instruction = (cmd->opcode << SHIFT_TO_OPCODE); /* opcode in bits 14-11 */
-    if (operandCount  == 2) { /*This case will be for when the first operand is the sopurce and the second is the target*/
+    if (operandCount  == TWO_OPERANDS) { /*This case will be for when the first operand is the sopurce and the second is the target*/
         instruction |= (encodeAddressingMode(operandTypes[0]) << SHIFT_TO_SOURCE); /* source operand in bits 7-10 */
         instruction |= (encodeAddressingMode(operandTypes[1]) << SHIFT_TO_TARGET); /* destination operand method in bits 3-6 */
     }
-    else if (operandCount  == 1) {
+    else if (operandCount  == ONE_OPERAND) {
         instruction |= (encodeAddressingMode(operandTypes[0]) << SHIFT_TO_TARGET); /* destination operand method in bits 3-6 */
     }
     instruction |= A_BIT; /* set 'A' bit to on */
 
     /* save instruction and curr IC here */
     if (resizeMemoryTable(tableIC, ++(*sizeIC))) {
+        free(copyLine);
         return 0; /* mem alloc err */
     }
     addEntry(*tableIC, (*sizeIC), *IC, instruction);
 
     /* Increment instruction counter based on operand types */
-    if (operandCount == 2) {
-        if ((operandTypes[0] == 1 || operandTypes[0] == 2) && (operandTypes[1] == 1 || operandTypes[1] == 2)) { /* if it's two operands of type register / reg pointer */
+    if (operandCount == TWO_OPERANDS) {
+        if ((operandTypes[0] == IS_REGISTER || operandTypes[0] == IS_P_REGISTER) && (operandTypes[1] == IS_REGISTER || operandTypes[1] == IS_P_REGISTER)) { /* if it's two operands of type register / reg pointer */
             instruction = 0;
             instruction |= returnRegisterNumber(operands[0]) << (SHIFT_TO_SOURCE - 1);
             instruction |= returnRegisterNumber(operands[1]) << SHIFT_TO_TARGET;
@@ -363,7 +394,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
         else { /* relevant when there is a constant or label */
             for (i = 0; i < operandCount; i++) {
                 switch(operandTypes[i]) {
-                    case 1: case 2: /* register or pointer to register */
+                    case IS_REGISTER: case IS_P_REGISTER: /* register or pointer to register */
                         instruction = 0;
                         if (i == 0) {
                             instruction |= returnRegisterNumber(operands[i]) << (SHIFT_TO_SOURCE - 1);
@@ -373,19 +404,19 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
                         instruction |= A_BIT;
                         addNextWord(*tableIC, (*sizeIC) - 1, (*IC) + i + 1, instruction);
                         break;
-                    case 3: /* adresss */
+                    case IS_LABEL: /* adresss */
                         addNextWord(*tableIC, (*sizeIC) - 1, (*IC) + i + 1, -1);
                         break;
-                    case 4: /* immediate */
+                    case IS_IMMEDIATE: /* immediate */
                         instruction = ((atoi(operands[i] + 1) << (SHIFT_TO_TARGET)) | A_BIT) & ZERO_UPPER_BITS;
                         addNextWord(*tableIC, (*sizeIC) - 1, (*IC) + i + 1, instruction); /* +1 for the address to skip the "#" */
                         break;
                 }
             }
-            *IC += 3;
+            *IC += THREE_WORDS;
         }
     }
-    else if(operandCount == 1) {
+    else if(operandCount == ONE_OPERAND) {
         switch(operandTypes[0]) {
             case IS_REGISTER: case IS_P_REGISTER: /* register or pointer to register */
                 instruction = 0;
@@ -401,11 +432,13 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
                 addNextWord(*tableIC, (*sizeIC) - 1, (*IC) + 1, instruction); /* +1 for the address to skip the "#" */
                 break;
         }
-        *IC += 2;
-    }
-    else {
-        *IC +=1;
+        *IC += TWO_WORDS;
     }
 
+    else {
+        *IC += 1;
+    }
+
+    free(copyLine);
     return 1; /* great success */
 }

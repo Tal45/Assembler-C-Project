@@ -21,6 +21,8 @@ typedef struct {
     char *name;
     int opcode;
     int num_operands;
+    int legalAddrSrc;
+    int legalAddrTarget;
 } Command;
 
 /* struct for label table */

@@ -49,7 +49,6 @@ int main (int argc, char *argv[]) {
             }
         }
 
-
         if (!errCode) {
             errCode = secondPass(amfile, labelTable, &labelCount, &TableIC, &extApperance);
             if (errCode) {
@@ -95,9 +94,7 @@ int main (int argc, char *argv[]) {
             removeFiles(filename);
         }
 
-
         /* free up memory and zero flags for next iteration */
-
         if (sizeIC) { /* free virtual memory tables */
             freeMemoryTable(&TableIC, sizeIC);
         }
