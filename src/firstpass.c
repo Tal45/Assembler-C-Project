@@ -17,7 +17,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
     FILE *source = fopen(amfile, "r");
     if (!source) {
         printf("Error: unable to open file %s\n", amfile);
-        return -1;
+        return ERROR;
     }
 
     while (fgets(line, MAX_INPUT_LINE, source) != NULL) {
@@ -31,7 +31,7 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
 
             strcpy(label, token);
             if (isLabelDefined(label, labelTable, *labelCount)) {
-                endCode = 1;
+                endCode = ERROR;
             }
             token = strtok(NULL, " \t\r\n");
         }
@@ -97,19 +97,19 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
             if (onLabel) {
                 addLabel(labelTable, labelCount, label, *IC, 0, 0 ,0);
             }
-            if (!processInstruction(copyLine, IC, TableIC, sizeIC)) { /* process instruction to allocate memory */
+            if (processInstruction(copyLine, IC, TableIC, sizeIC)) { /* process instruction to allocate memory */
                 handleError(lineNum, copyLine, &endCode);
             }
 
         } else { /* unknown syntax or undefined command / instruction */
             printf("Error: unknown syntax (line %d): %s", lineNum, copyLine);
-            endCode = 1;
+            endCode = ERROR;
         }
     }
 
     fclose(source);
     if (endCode) { /* if error stop here */
-        return -1;
+        return ERROR;
     }
 
     /* update offset for data counter*/
@@ -118,5 +118,5 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
         mergeMemoryTables(TableIC, *TableDC, sizeIC, *sizeDC, *IC);
     }
 
-    return 0; /* success */
+    return SUCCESS;
 }

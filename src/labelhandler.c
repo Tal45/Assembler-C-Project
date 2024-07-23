@@ -45,7 +45,7 @@ int findLabelIndex(Label *labelTable, int tableSize, char *labelName) {
         }
     }
     printf("Error: label %s not found in the label table!\n", labelName);
-    return -1;
+    return ERROR;
 }
 
 /* extern calls linked list */
@@ -56,7 +56,7 @@ int enlistNode(extList **extApp, char *label, int addr) {
     newNode = (extList *)malloc(sizeof(extList));
     if (newNode == NULL) {
         printf("malloc: Memory allocation failed!\n");
-        return 1;
+        return ERROR;
     }
 
     strcpy(newNode->label, label);
@@ -73,7 +73,7 @@ int enlistNode(extList **extApp, char *label, int addr) {
         current->next = newNode;
     }
 
-    return 0;
+    return SUCCESS;
 }
 
 /* free the linked list of extern calls */

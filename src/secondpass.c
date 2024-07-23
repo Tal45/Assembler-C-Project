@@ -17,7 +17,7 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
     FILE *source = fopen(amfile, "r");
     if (!source) {
         printf("Error: unable to open file %s\n", amfile);
-        return -1;
+        return ERROR;
     }
 
     while (fgets(nextLine, MAX_INPUT_LINE, source) != NULL) {

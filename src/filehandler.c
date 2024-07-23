@@ -16,7 +16,7 @@ char *createFile(char *name, char *format, int isOutput) {
         name_size += strlen(OUTPUT_DIR);
     }
 
-    tmp = (char *) malloc((name_size + 1) * sizeof(char));
+    tmp = (char *) malloc((name_size + 1) * CHAR_SIZE);
     if (tmp == NULL) {
         printf("malloc: Memory allocation failed!\n");
         printf("Error: unable to create file: %s\n", strcat(filepath, format));
@@ -39,7 +39,7 @@ int dumpEntriesToFile(const char *filename, Label labelTable[], int labelCount) 
     file = fopen(filename, "a");
     if (file == NULL) {
         printf("Error: unable to create file: %s\n", filename);
-        return 1;
+        return ERROR;
     }
 
     for (i = 0; i < labelCount; i++) {
@@ -49,7 +49,7 @@ int dumpEntriesToFile(const char *filename, Label labelTable[], int labelCount) 
     }
 
     fclose(file);
-    return 0;
+    return SUCCESS;
 }
 
 int dumpExternsToFile(char *filename, extList *head) {
@@ -59,7 +59,7 @@ int dumpExternsToFile(char *filename, extList *head) {
     file = fopen(filename, "a");
     if (file == NULL) {
         printf("Error: unable to create file: %s\n", filename);
-        return 1;
+        return ERROR;
     }
 
     current = head;
@@ -69,7 +69,7 @@ int dumpExternsToFile(char *filename, extList *head) {
     }
 
     fclose(file);
-    return 0;
+    return SUCCESS;
 }
 
 
@@ -78,7 +78,7 @@ int dumpMemoryToFile(char *filename, virtualMem *array, int sizeIC, int IC, int 
     FILE *fp = fopen(filename, "a");
     if (fp == NULL) {
         printf("Error: unable to create file: %s\n", filename);
-        return 1;
+        return ERROR;
     }
     fprintf(fp,"  %d %d\n", IC-IC_START_ADDRESS, sizeDC);
 
@@ -95,7 +95,7 @@ int dumpMemoryToFile(char *filename, virtualMem *array, int sizeIC, int IC, int 
 
     }
     fclose(fp);
-    return 0; /* success */
+    return SUCCESS; /* success */
 }
 
 void removeFiles(char *filename) {

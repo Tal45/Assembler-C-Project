@@ -12,6 +12,9 @@
 #define TWO_WORDS 2
 #define THREE_WORDS 3
 #define OUTPUT_DIR "outputfiles/"
+#define CHAR_SIZE sizeof(char)
+#define ERROR (-1)
+#define SUCCESS 0
 
 /* macro related */
 #define MAX_MACRO_NAME 31 /* in forum discussion it was said macros name will be 31 chars at max */

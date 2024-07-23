@@ -5,6 +5,7 @@
 int preProcess(char *file, char *destfile) {
     int i;
     char line[MAX_INPUT_LINE];
+    unsigned int lineLength;
     int lineCount = 0;
     char mcroname[MAX_MACRO_NAME];
     char checkEndOfLine[EOL_BUFFER];
@@ -20,22 +21,27 @@ int preProcess(char *file, char *destfile) {
     src = fopen(file, "r");
     if (src == NULL) {
         printf("Error: unable to open file! file name: %s\n", file);
-        return -1;
+        return ERROR;
     }
     tmp = fopen(destfile, "w");
     if (tmp == NULL) {
         printf("Error: unable to open file! file name: %s\n", destfile);
         fclose(src);
-        return -1;
+        return ERROR;
     }
 
     while ((fgets(line, MAX_INPUT_LINE, src)) != NULL && !endCode) {
         lineCount++;
+        lineLength = strlen(line);
         if (isEmptyOrCommentLine(line)) {
             /* if there is a blank line or comment, continue to next line in file without copying it */
             continue;
-        }
-        else {
+        } else if (lineLength == MAX_INPUT_LINE -1 && line[lineLength-1] != '\n') {
+          /* if input line exceeds buffer */
+          printf("Error: input line exceeds maximum line length of 80, line number: %d\n", lineCount);
+          endCode = -1;
+          continue;
+        } else {
             if (strstr(line, "macr") != NULL && !isSingleWordLine(line)) { /* check if macr substring is present in current line, if so start register new macro */
                 if (sscanf(line, "%s %s %s", mcroname, mcroname, checkEndOfLine) == 3) {
                     printf("Error: extraneous text after macro definition! in line %d: %s\n", lineCount, line);

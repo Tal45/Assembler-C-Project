@@ -16,6 +16,10 @@ int main (int argc, char *argv[]) {
     int sizeDC = 0;
     extList *extApperance = NULL;
 
+    if (argc == 1) { /* no arguments */
+        printf("Error: no file names passed as arguments!\nResolve by passing arguments in command line (i.e ./assembler filename1 filename2 ...)\n");
+    }
+
     while (--argc > 0) { /* iterate while there are more files to process */
 
 	    if (strrchr(argv[argc], '/') == NULL) { /* find if file is in different dir */
@@ -119,5 +123,5 @@ int main (int argc, char *argv[]) {
 
     } /* end of while loop */
 
-    return 0; /* main executed successfully */
+    return SUCCESS; /* main executed successfully */
 } /* end of main */

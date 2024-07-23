@@ -7,20 +7,20 @@ int resizeMacroTable(Macro **table, unsigned int size) {
         tmp = (Macro *)malloc(size * sizeof(Macro));
         if (tmp == NULL) {
             printf("malloc: Memory allocation failed!\n");
-            return -1; /* if malloc fails NULL returned to func the called this func to proper handle exit */
+            return ERROR; /* if malloc fails NULL returned to func the called this func to proper handle exit */
         }
         *table = tmp;
     } else {
         tmp = (Macro *)realloc(*table, size * sizeof(Macro));
         if (tmp == NULL) {
             printf("realloc: Memory allocation failed!\n");
-            return -1; /* if realloc fails the exit handling will be done in the preProcess function */
+            return ERROR; /* if realloc fails the exit handling will be done in the preProcess function */
         }
         *table = tmp;
     }
     (*table)[size-1].lines = NULL;
 
-    return 0; /* great success */
+    return SUCCESS; /* great success */
 }
 
 FILE *registerMacro(char *name, FILE *fp, Macro *mp, int *endCode, int *lineCount) {
@@ -33,10 +33,10 @@ FILE *registerMacro(char *name, FILE *fp, Macro *mp, int *endCode, int *lineCoun
     while(fgets(nextLine, MAX_INPUT_LINE,fp) != NULL && strstr(nextLine, "endmacr") == NULL) {
         (*lineCount)++;
         if (mp->lines == NULL) {
-            mp->lines = (char *)malloc((strlen(nextLine) + 2) * sizeof(char));
+            mp->lines = (char *)malloc((strlen(nextLine) + 2) * CHAR_SIZE);
             if (mp->lines == NULL) {
                 printf("malloc: Memory allocation failed!\n");
-                *endCode = -1;
+                *endCode = ERROR;
                 break;
             }
             strcpy(mp->lines,nextLine);
@@ -46,7 +46,7 @@ FILE *registerMacro(char *name, FILE *fp, Macro *mp, int *endCode, int *lineCoun
             tmp = (char *)realloc(mp->lines, (strlen(mp->lines) + strlen(nextLine) + 2) * sizeof(char *));
             if (tmp == NULL) {
                 printf("realloc: Memory allocation failed!\n");
-                *endCode = -1;
+                *endCode = ERROR;
                 break;
             }
             mp->lines = tmp;
@@ -57,7 +57,7 @@ FILE *registerMacro(char *name, FILE *fp, Macro *mp, int *endCode, int *lineCoun
     (*lineCount)++;
     if (sscanf(nextLine, "%s %s", checkEOL, checkEOL) == 2) {
         printf("Error: extraneous text after end of macro definition! in line %d: %s\n", *lineCount, nextLine);
-        *endCode = -1;
+        *endCode = ERROR;
     }
     return fp;
 }
@@ -91,7 +91,7 @@ FILE *extendMacro(FILE *target, Macro *macrotable) {
 }
 
 int isSingleWordLine(char *line) {
-    char buffer[MAX_BUFFER];
+    char buffer[MAX_INPUT_LINE];
     char *token;
     strncpy(buffer, line, sizeof(buffer));
     buffer[sizeof(buffer) - 1] = '\0';
@@ -139,7 +139,8 @@ int validateMacroName(char *name) {
 
     for (i = 0; i < RESERVED_NAMES; i++) {
         if (strcmp(name, reservedNames[i]) == 0) {
-            retCode = -1;
+            retCode = ERROR;
+            break;
         }
     }
 

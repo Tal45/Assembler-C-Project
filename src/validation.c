@@ -175,7 +175,7 @@ void trimCntrls(char *line) {
 }
 
 void handleError(int linenum, char *line, int *err) {
-    *err = 1;
+    *err = ERROR;
     trimCntrls(line);
     printf("Error: occurred in line %d: %s\n", linenum, line);
 }
@@ -288,10 +288,10 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
             {"stop", STOP_OPCODE, ZERO_OPERANDS, 0, 0},
     };
 
-    copyLine = (char *)malloc(strlen(line) * sizeof(char));
+    copyLine = (char *)malloc((strlen(line) + 1) * CHAR_SIZE);
     if (copyLine == NULL) {
         printf("Error: memory allocation failed!\n");
-        return 0;
+        return ERROR;
     }
     strcpy(copyLine, line); /* create a copy of input line */
 
@@ -302,7 +302,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
     if (!cmd) {
         printf("Error: unknown command: %s\n", cmdName);
         free(copyLine);
-        return 0; /* err return */
+        return ERROR;
     }
 
     while (*tmpLine) {
@@ -318,7 +318,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
         } else {
             printf("Error: invalid number of operands for command: %s\n", cmd->name);
             free(copyLine);
-            return 0; /* err return */
+            return ERROR;
         }
 
         if (comma) {
@@ -331,7 +331,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
     if (operandCount < cmd->num_operands) {
         printf("Error: insufficient amount of operands, (expected: %d found: %d)\n", cmd->num_operands, operandCount);
         free(copyLine);
-        return 0;
+        return ERROR;
     }
 
     for (i = 0; i < operandCount; i++) { /* assign operand types */
@@ -339,7 +339,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
         if (operandTypes[i] == 0) {
             printf( "Error: invalid operand type: %s\n", operands[i]);
             free(copyLine);
-            return 0; /* err return  */
+            return ERROR;
         }
     }
 
@@ -348,18 +348,18 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
         if (!(encodeAddressingMode(operandTypes[0]) & cmd->legalAddrSrc)) {
             printf("Error: illegal operand addressing mode for source operand: %s\n", operands[0]);
             free(copyLine);
-            return 0;
+            return ERROR;
         }
         if (!(encodeAddressingMode(operandTypes[1]) & cmd->legalAddrTarget)) {
             printf("Error: illegal operand addressing mode for target operand: %s\n", operands[1]);
             free(copyLine);
-            return 0;
+            return ERROR;
         }
     } else if (operandCount == ONE_OPERAND) {
         if (!(encodeAddressingMode(operandTypes[0]) & cmd->legalAddrTarget)) {
             printf("Error: illegal operand addressing mode for target operand: %s\n", operands[0]);
             free(copyLine);
-            return 0;
+            return ERROR;
         }
     }
 
@@ -377,7 +377,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
     /* save instruction and curr IC here */
     if (resizeMemoryTable(tableIC, ++(*sizeIC))) {
         free(copyLine);
-        return 0; /* mem alloc err */
+        return ERROR;
     }
     addEntry(*tableIC, (*sizeIC), *IC, instruction);
 
@@ -389,7 +389,7 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
             instruction |= returnRegisterNumber(operands[1]) << SHIFT_TO_TARGET;
             instruction |= A_BIT;
             addNextWord(*tableIC, (*sizeIC) - 1, (*IC)+1, instruction);
-            *IC += 2;
+            *IC += TWO_WORDS;
         }
         else { /* relevant when there is a constant or label */
             for (i = 0; i < operandCount; i++) {
@@ -440,5 +440,5 @@ int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC) {
     }
 
     free(copyLine);
-    return 1; /* great success */
+    return SUCCESS; /* great success */
 }

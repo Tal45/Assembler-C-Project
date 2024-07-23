@@ -12,14 +12,14 @@ int addNextWord(virtualMem *head, int index, int address, int binaryCode) {
     newNode = (virtualMem*) malloc(sizeof(virtualMem));
     if (newNode == NULL) {
         printf("malloc: Memory allocation failed!\n");
-        return -1;
+        return ERROR;
     }
     newNode->address = address;
     newNode->binaryCode = binaryCode;
     newNode->nextWord = NULL;
     pt->nextWord = newNode;
 
-    return 0;
+    return SUCCESS;
 }
 
 /* resize memory table to newSize / initate table if newSize == 1 */
@@ -30,13 +30,13 @@ int resizeMemoryTable(virtualMem **table, int newSize) {
         newTable = (virtualMem *)malloc(newSize * sizeof(virtualMem));
         if (newTable == NULL) {
             printf("malloc: Memory allocation failed!\n");
-            return -1;
+            return ERROR;
         }
     } else {
         newTable = (virtualMem*) realloc(*table, newSize * sizeof(virtualMem));
         if (newTable == NULL) {
             printf("realloc: Memory allocation failed!\n");
-            return -1;
+            return ERROR;
         }
     }
     *table = newTable;
@@ -45,7 +45,7 @@ int resizeMemoryTable(virtualMem **table, int newSize) {
     (*table)[newSize - 1].address = 0;
     (*table)[newSize - 1].nextWord = NULL;
 
-    return 0; /* great success */
+    return SUCCESS; /* great success */
 }
 
 /* Function to add entry to memory table */
@@ -61,7 +61,7 @@ int mergeMemoryTables(virtualMem **tableIC, virtualMem *tableDC, int *size_table
 
     /* allocate enough memory in IC table */
     if (resizeMemoryTable(tableIC, (*size_tableIC) + size_tableDC)) {
-        return -1; /* re-alloc failure */
+        return ERROR; /* re-alloc failure */
     }
     else { /* memory allocation successful copy tableDC to tableIC */
         for (i = *size_tableIC + 1, j = 0; i <= (*size_tableIC) + size_tableDC; j++, i++) {
@@ -70,7 +70,7 @@ int mergeMemoryTables(virtualMem **tableIC, virtualMem *tableDC, int *size_table
     }
     *size_tableIC += size_tableDC; /* update size of tableIC */
 
-    return 0;
+    return SUCCESS;
 }
 
 /* free memory table and it's linked nodes if any present */
