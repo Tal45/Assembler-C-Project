@@ -113,7 +113,7 @@ int firstPass(char *amfile, Label **labelTable, int *labelCount, virtualMem **Ta
             }
 
         } else { /* unknown syntax or undefined command / instruction */
-            printf("Error: unknown syntax (line %d): %s", lineNum, copyLine);
+            printf("Error: unknown syntax (line %d): %s\n", lineNum, copyLine);
             endCode = ERROR;
         }
     }
