@@ -32,7 +32,7 @@ char *createFile(char *name, char *format, int isOutput) {
     return tmp;
 }
 
-int dumpEntriesToFile(const char *filename, Label labelTable[], int labelCount) {
+int dumpEntriesToFile(const char *filename, Label **labelTable, int labelCount) {
     FILE *file;
     int i;
 
@@ -43,8 +43,8 @@ int dumpEntriesToFile(const char *filename, Label labelTable[], int labelCount) 
     }
 
     for (i = 0; i < labelCount; i++) {
-        if (labelTable[i].isEntry == 1) {
-            fprintf(file, "%s %04d\n", labelTable[i].name, labelTable[i].address);
+        if ((*labelTable)[i].isEntry == 1) {
+            fprintf(file, "%s %04d\n", (*labelTable)[i].name, (*labelTable)[i].address);
         }
     }
 

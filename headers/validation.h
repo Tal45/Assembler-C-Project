@@ -10,6 +10,7 @@
 #include "structs.h"
 #include "constants.h"
 #include "virtualmemory.h"
+#include "labelhandler.h"
 
 
 int isCommand(char *cmd);
@@ -17,7 +18,6 @@ int validateSingleLabel(char *line);
 int validateString(char *line);
 int validateData(char *line);
 void handleError(int linenum, char *line, int *err);
-void updateDCOffset(Label table[], int labelCount, int IC);
 int processInstruction(char *line, int *IC, virtualMem **tableIC, int *sizeIC);
 int encodeAddressingMode(int operandType);
 int checkOperandTypes(char *operand);

@@ -4,12 +4,12 @@ int main (int argc, char *argv[]) {
     char *amfile = NULL, *asfile = NULL, *obfile = NULL, *extfile = NULL, *entfile = NULL;
     int errCode = 0;
     char *filename = NULL;
-    Label labelTable[MAX_LABELS];
-    int labelCount = 0;
 
     int IC = IC_START_ADDRESS;
     int entFlag = 0;
 
+    Label *labelTable = NULL;
+    int labelCount = 0;
     virtualMem *TableIC = NULL;
     int sizeIC = 0;
     virtualMem *TableDC = NULL;
@@ -47,14 +47,14 @@ int main (int argc, char *argv[]) {
         free(asfile);
 
         if (!errCode) {
-            errCode = firstPass(amfile, labelTable, &labelCount, &TableIC, &sizeIC, &TableDC, &sizeDC, &IC, &entFlag);
+            errCode = firstPass(amfile, &labelTable, &labelCount, &TableIC, &sizeIC, &TableDC, &sizeDC, &IC, &entFlag);
             if (errCode) {
                 printf("Error: first pass failed for file: %s\n", amfile);
             }
         }
 
         if (!errCode) {
-            errCode = secondPass(amfile, labelTable, &labelCount, &TableIC, &extApperance);
+            errCode = secondPass(amfile, &labelTable, &labelCount, &TableIC, &extApperance);
             if (errCode) {
                 printf("Error: second pass failed for file: %s\n", amfile);
             }
@@ -88,7 +88,7 @@ int main (int argc, char *argv[]) {
                     break;
                 }
                 remove(entfile);
-                errCode |= dumpEntriesToFile(entfile, labelTable, labelCount);
+                errCode |= dumpEntriesToFile(entfile, &labelTable, labelCount);
                 free(entfile); /* de-allocate memory */
             }
         }
@@ -105,7 +105,9 @@ int main (int argc, char *argv[]) {
         if (sizeDC && !errCode) { /* if first pass failed then tableDC wasn't merged into IC, free separately */
             freeMemoryTable(&TableDC, sizeDC);
         }
-        resetLabelTable(labelTable, labelCount); /* zero out values of label table */
+        if (labelTable) { /* free allocated memory for labelTable */
+            free(labelTable);
+        }
         sizeIC = sizeDC = labelCount = entFlag = 0; /* zero out flags and trackers */
         IC = IC_START_ADDRESS;
 
@@ -114,6 +116,7 @@ int main (int argc, char *argv[]) {
         /* set dynamic structs to NULL */
         TableIC = TableDC = NULL;
         extApperance = NULL;
+        labelTable = NULL;
 	    if(!errCode) {
             printf("\n- Files assembled successfully!\n");
         } else {

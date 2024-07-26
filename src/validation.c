@@ -180,24 +180,6 @@ void handleError(int linenum, char *line, int *err) {
     printf("Error: occurred in line %d: %s\n", linenum, line);
 }
 
-void updateDCOffset(Label table[], int labelCount, int IC) {
-    int i;
-
-    for (i = 0; i < labelCount; i++) {
-        if (table[i].isData) {
-            table[i].address += IC;
-        }
-    }
-}
-
-/* remove label from input string */
-void removeLabel(char *line) {
-    char *colon = strchr(line, ':');
-    if (colon) {
-        memmove(line, colon + 1, strlen(colon + 1) + 1);
-    }
-}
-
 /* fetch cmd name */
 char *getCmdName(char *line, char *word) {
     while (isspace(*line)) line++;

@@ -1,7 +1,6 @@
 #include "../headers/validation.h"
-#include "../headers/labelhandler.h"
 
-int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **TableIC, int *sizeIC, virtualMem **TableDC, int *sizeDC, int *IC, int *entFlag) {
+int firstPass(char *amfile, Label **labelTable, int *labelCount, virtualMem **TableIC, int *sizeIC, virtualMem **TableDC, int *sizeDC, int *IC, int *entFlag) {
 
     int onLabel = 0; /* flag for label def */
     char label[MAX_LABEL_LENGTH]; /* label name holder */
@@ -38,7 +37,11 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
 
         if (strcmp(token, ".data") == 0 || strcmp(token, ".string") == 0) {
             if (onLabel) {
-                addLabel(labelTable, labelCount, label, *sizeDC, 1, 0, 0);
+                if (resizeLabelTable(labelTable, ++(*labelCount))) {
+                    endCode = ERROR; /* memory failure */
+                    break;
+                }
+                addLabel(labelTable, *labelCount, label, *sizeDC, 1, 0, 0);
             }
             if (strcmp(token, ".data") == 0) {
                 if (validateData(copyLine)) { /* validates data after ins, returns true if valid */
@@ -83,7 +86,11 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
             if (strcmp(token, ".extern") == 0) {
                 if (validateSingleLabel(copyLine)) { /* check if only one label in declaration */
                     token = strtok(NULL, " \t\r\n");
-                    addLabel(labelTable, labelCount, token, 1, 0, 1, 0);
+                    if (resizeLabelTable(labelTable, ++(*labelCount))) {
+                        endCode = ERROR; /* memory failure */
+                        break;
+                    }
+                    addLabel(labelTable, *labelCount, token, 1, 0, 1, 0);
                 } else {
                     handleError(lineNum, copyLine, &endCode);
                 }
@@ -95,7 +102,11 @@ int firstPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Tab
             }
         } else if (isCommand(token)) {
             if (onLabel) {
-                addLabel(labelTable, labelCount, label, *IC, 0, 0 ,0);
+                if (resizeLabelTable(labelTable, ++(*labelCount))) {
+                    endCode = ERROR; /* memory failure */
+                    break;
+                }
+                addLabel(labelTable, *labelCount, label, *IC, 0, 0 ,0);
             }
             if (processInstruction(copyLine, IC, TableIC, sizeIC)) { /* process instruction to allocate memory */
                 handleError(lineNum, copyLine, &endCode);

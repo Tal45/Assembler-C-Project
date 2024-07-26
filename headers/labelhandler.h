@@ -8,12 +8,13 @@
 #include "structs.h"
 #include "constants.h"
 
-void addLabel(Label labelTable[], int *labelCount, char *name, int address, int isData, int isExt, int isEnt);
+int resizeLabelTable(Label **labelTable, int labelCounter);
+void addLabel(Label **labelTable, int labelCount, char *name, int address, int isData, int isExt, int isEnt);
 int isLabel(char *token);
-int isLabelDefined(char *token, Label labelTable[], int labelCount);
-void resetLabelTable(Label *labelTable, int size);
+int isLabelDefined(char *token, Label **labelTable, int labelCount);
+void updateDCOffset(Label **table, int labelCount, int IC);
 void removeLabel(char *line);
-int findLabelIndex(Label *labelTable, int tableSize, char *labelName);
+int findLabelIndex(Label **labelTable, int tableSize, char *labelName);
 int enlistNode(extList **extApp, char *label, int addr);
 void freeList(extList *head);
 

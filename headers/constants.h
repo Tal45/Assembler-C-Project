@@ -3,7 +3,6 @@
 
 #define MAX_LABEL_LENGTH 31 /* maximum length of label according to instructions */
 #define MAX_INPUT_LINE 81 /* maximum length of line according to instructions */
-#define MAX_LABELS 100 /* for convenience, we've decided on an array of 100 labels per program */
 #define IC_START_ADDRESS 100 /* starting address for memory */
 #define NUM_OF_COMMANDS 15 /* all legal commands */
 #define MAX_CMD_NAME 5 /* length of max cmd name */

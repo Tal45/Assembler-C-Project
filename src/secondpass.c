@@ -1,7 +1,7 @@
 #include "../headers/validation.h"
-#include "../headers/labelhandler.h"
 
-int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **TableIC, extList **extApp) {
+
+int secondPass(char *amfile, Label **labelTable, int *labelCount, virtualMem **TableIC, extList **extApp) {
 
     char nextLine[MAX_INPUT_LINE];
     char copyLine[MAX_INPUT_LINE];
@@ -37,7 +37,7 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
             if ((labelIndex = findLabelIndex(labelTable, *labelCount, token)) < 0) { /* label not defined in first pass */
                 handleError(lineNum, nextLine, &endCode);
             } else {
-                labelTable[labelIndex].isEntry = 1;
+                (*labelTable)[labelIndex].isEntry = 1;
                 continue;
             }
         } else { /* handle command & operands */
@@ -46,8 +46,8 @@ int secondPass(char *amfile, Label *labelTable, int *labelCount, virtualMem **Ta
                     if ((labelIndex = findLabelIndex(labelTable, *labelCount,token)) < 0) {
                         handleError(lineNum, nextLine, &endCode);
                     } else { /* complete the address of the label in the virutal memory */
-                        addr = labelTable[labelIndex].address;
-                        extUseFlag = labelTable[labelIndex].isExtern;
+                        addr = (*labelTable)[labelIndex].address;
+                        extUseFlag = (*labelTable)[labelIndex].isExtern;
                         tmpIC = encodeAddr(*TableIC, IC, addr, extUseFlag);
                         if (extUseFlag) { /* label is extern, enlist it in extern linked list */
                             err = enlistNode(extApp, token,tmpIC);

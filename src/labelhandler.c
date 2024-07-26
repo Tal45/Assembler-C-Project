@@ -1,46 +1,61 @@
 #include "../headers/labelhandler.h"
 
-void addLabel(Label labelTable[], int *labelCount, char *name, int address, int isData, int isExt, int isEnt) {
-    strcpy(labelTable[*labelCount].name, name);
-    labelTable[*labelCount].address = address;
-    labelTable[*labelCount].isData = isData;
-    labelTable[*labelCount].isExtern = isExt;
-    labelTable[*labelCount].isEntry = isEnt;
-    (*labelCount)++;
+int resizeLabelTable(Label **labelTable, int labelCounter) {
+    Label *tmp;
+
+    if (labelCounter == 1) {
+        /* allocate memory for one Label struct */
+        tmp = (Label *)malloc(sizeof(Label));
+        if (tmp == NULL) {
+            printf("Malloc: memory allocation failed\n");
+            return ERROR;
+        }
+    } else {
+        /* realloc memory to hold labelCounter + 1 Label structs in labelTable */
+        tmp = (Label *)realloc(*labelTable, (labelCounter + 1) * sizeof(Label));
+        if (tmp == NULL) {
+            printf("Realloc: memory allocation failed\n");
+            return ERROR;
+        }
+
+    }
+    *labelTable = tmp;
+    memset((*labelTable)[labelCounter-1].name, 0, MAX_LABEL_LENGTH);
+    (*labelTable)[labelCounter-1].address = 0;
+    (*labelTable)[labelCounter-1].isData = 0;
+    (*labelTable)[labelCounter-1].isExtern = 0;
+    (*labelTable)[labelCounter-1].isEntry = 0;
+
+    return SUCCESS;
+}
+
+void addLabel(Label **labelTable, int labelCount, char *name, int address, int isData, int isExt, int isEnt) {
+    strcpy((*labelTable)[labelCount - 1].name, name);
+    (*labelTable)[labelCount - 1].address = address;
+    (*labelTable)[labelCount - 1].isData = isData;
+    (*labelTable)[labelCount - 1].isExtern = isExt;
+    (*labelTable)[labelCount - 1].isEntry = isEnt;
 }
 
 int isLabel(char *token) {
     return token[strlen(token) - 1] == ':';
 }
 
-int isLabelDefined(char *token, Label *labelTable, int labelCount) {
+int isLabelDefined(char *token, Label **labelTable, int labelCount) {
     int i;
     for (i = 0; i < labelCount; i++) {
-        if (strcmp(labelTable[i].name, token) == 0)
+        if (strcmp((*labelTable)[i].name, token) == 0)
             return 1;
     }
     return 0;
 }
 
-/* reset all labels in label table */
-void resetLabelTable(Label *labelTable, int size) {
-    int i;
-
-    for (i = 0; i < size; i++) {
-        memset(labelTable[i].name, 0, MAX_LABEL_LENGTH);
-        labelTable[i].address = 0;
-        labelTable[i].isData = 0;
-        labelTable[i].isExtern = 0;
-        labelTable[i].isEntry = 0;
-    }
-}
-
 /* find the index of a label by name in the label table */
-int findLabelIndex(Label *labelTable, int tableSize, char *labelName) {
+int findLabelIndex(Label **labelTable, int tableSize, char *labelName) {
     int i;
 
     for (i = 0; i < tableSize; i++) {
-        if (strcmp(labelTable[i].name, labelName) == 0) {
+        if (strcmp((*labelTable)[i].name, labelName) == 0) {
             return i;
         }
     }
@@ -86,5 +101,23 @@ void freeList(extList *head) {
         nextNode = current->next;
         free(current);
         current = nextNode;
+    }
+}
+
+void updateDCOffset(Label **table, int labelCount, int IC) {
+    int i;
+
+    for (i = 0; i < labelCount; i++) {
+        if ((*table)[i].isData) {
+            (*table)[i].address += IC;
+        }
+    }
+}
+
+/* remove label from input string */
+void removeLabel(char *line) {
+    char *colon = strchr(line, ':');
+    if (colon) {
+        memmove(line, colon + 1, strlen(colon + 1) + 1);
     }
 }
