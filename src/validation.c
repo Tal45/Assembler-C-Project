@@ -208,7 +208,7 @@ int returnRegisterNumber(char *operand) {
     else {
         return atoi(&operand[2]);
     }
-}
+} /* the offsets of 0,1,2 represents the chars in the string operand */
 
 /* function to check operand types */
 int checkOperandTypes(char *operand) {
@@ -225,7 +225,7 @@ int checkOperandTypes(char *operand) {
         return IS_IMMEDIATE; /* Constant type */
     }
     return 0; /* Unknown type */
-}
+} /* the offsets of 0,1,2 represents the chars in the string operand */
 
 
 /* encode operand type into bit fields */

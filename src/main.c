@@ -133,7 +133,7 @@ int main (int argc, char *argv[]) {
 	    if(!errCode) {
             printf("\n- Files assembled successfully!\n");
         } else {
-            printf("\n- Error occured - no files assembled!\n");
+            printf("\n- Error occurred - no files assembled!\n");
         };
         printf("\n----------------- End of assembly (%s.as) -----------------\n", filename);
 

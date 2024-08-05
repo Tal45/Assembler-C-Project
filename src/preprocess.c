@@ -30,7 +30,7 @@ int preProcess(char *file, char *destfile) {
         return ERROR;
     }
 
-    while ((fgets(line, MAX_INPUT_LINE, src)) != NULL && !endCode) {
+    while ((fgets(line, MAX_INPUT_LINE, src)) != NULL) {
         lineCount++;
         lineLength = strlen(line);
         if (isEmptyOrCommentLine(line)) {
@@ -39,13 +39,13 @@ int preProcess(char *file, char *destfile) {
         } else if (lineLength == MAX_INPUT_LINE -1 && line[lineLength-1] != '\n') {
           /* if input line exceeds buffer */
           printf("Error: input line exceeds maximum line length of 80, line number: %d\n", lineCount);
-          endCode = -1;
+          endCode = ERROR;
           continue;
         } else {
             if (strstr(line, "macr") != NULL && !isSingleWordLine(line)) { /* check if macr substring is present in current line, if so start register new macro */
-                if (sscanf(line, "%s %s %s", mcroname, mcroname, checkEndOfLine) == 3) {
+                if (sscanf(line, "%s %s %s", mcroname, mcroname, checkEndOfLine) == THREE_WORDS) {
                     printf("Error: extraneous text after macro definition! in line %d: %s\n", lineCount, line);
-                    endCode = -1;
+                    endCode = ERROR;
                     continue;
                 }
                 if ((endCode = validateMacroName(mcroname))) {
