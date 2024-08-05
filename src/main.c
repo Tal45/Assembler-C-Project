@@ -1,3 +1,16 @@
+/*
+ * Description:
+ *      Two-Pass assembler project that can get multiple .as files from user inserted by command line
+ *      the program performs pre-process, first pass and second pass accordingly and outputs .ob file
+ *      to view the construction of the virutal memory, .am file for the program code after macro extension
+ *      .ent file if any entries declared in program and .ext file if any extern addresses used in program
+ *
+ * Authors:
+ *      Tal Levi and Vadim Volkov
+ *
+ * Version:
+ *      05/08/2024
+ */
 #include "../headers/main.h"
 
 int main (int argc, char *argv[]) {

@@ -45,9 +45,9 @@ int isLabelDefined(char *token, Label **labelTable, int labelCount) {
     int i;
     for (i = 0; i < labelCount; i++) {
         if (strcmp((*labelTable)[i].name, token) == 0)
-            return 1;
+            return ERROR;
     }
-    return 0;
+    return SUCCESS;
 }
 
 /* find the index of a label by name in the label table */
