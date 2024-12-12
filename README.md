@@ -85,7 +85,7 @@ The assembler supports 8 registers:
      
 #### Addressing Modes
 - **Immediate**: #<value> (e.g., mov #5, r1)
-- **Direct**: <label> (e.g., mov r2, r1)
+- **Direct**: <label> (e.g., mov label, r1)
 - **Register Direct**: r<register_number> (e.g., mov r2, r1)
 - **Register Indirect**: *r<register_number> (e.g., mov *r3, r1)
 
